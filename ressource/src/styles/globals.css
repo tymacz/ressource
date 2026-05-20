@@ -1,0 +1,117 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* Intégration de la police Zain */
+  --font-sans: "Zain", var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Couleurs de la charte pour utilisation directe (ex: text-brand-coral) */
+  --color-brand-coral: oklch(74.5% 0.14 45);
+  --color-brand-seafoam: oklch(82.6% 0.05 165);
+  --color-brand-ivory: oklch(98.5% 0.01 85);
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+
+  /* Mapping Shadcn avec la charte graphique */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Rayon de courbure plus doux (organique) pour coller au logo */
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+}
+
+:root {
+  /* Fond principal : Ivoire (#FDFAF0) */
+  --background: oklch(98.5% 0.01 85);
+
+  /* Texte principal : Corail assombri pour RGAA (Contraste > 4.5:1) */
+  --foreground: oklch(45% 0.12 45);
+
+  /* Éléments primaires : Corail doux (#FF9966) */
+  --primary: oklch(74.5% 0.14 45);
+  --primary-foreground: oklch(99% 0.01 85);
+
+  /* Éléments secondaires : Vert écume (#A5D1B1) */
+  --secondary: oklch(82.6% 0.05 165);
+  --secondary-foreground: oklch(35% 0.05 165);
+  /* Vert sombre pour lisibilité */
+
+  --card: oklch(99.5% 0.01 85);
+  --card-foreground: oklch(45% 0.12 45);
+
+  --muted: oklch(94% 0.02 85);
+  --muted-foreground: oklch(40% 0.02 85);
+
+  --accent: oklch(82.6% 0.05 165 / 0.2);
+  /* Teinte légère de vert */
+  --accent-foreground: oklch(35% 0.05 165);
+
+  --border: oklch(85% 0.03 45 / 0.3);
+  --input: oklch(85% 0.03 45 / 0.3);
+  --ring: oklch(74.5% 0.14 45);
+
+  --radius: 1rem;
+}
+
+/* Mode sombre : Inversion douce pour garder l'aspect chaleureux */
+.dark {
+  --background: oklch(20% 0.02 45);
+  --foreground: oklch(95% 0.02 85);
+
+  --primary: oklch(74.5% 0.14 45);
+  --primary-foreground: oklch(20% 0.02 45);
+
+  --secondary: oklch(45% 0.05 165);
+  --secondary-foreground: oklch(95% 0.05 165);
+
+  --card: oklch(25% 0.02 45);
+  --card-foreground: oklch(95% 0.02 85);
+
+  --muted: oklch(30% 0.02 45);
+  --muted-foreground: oklch(80% 0.02 85);
+
+  --border: oklch(100% 0 0 / 10%);
+  --ring: oklch(74.5% 0.14 45);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* On force le poids Zain Medium pour le corps de texte (meilleur pour l'accessibilité) */
+  html {
+    @apply font-sans font-medium;
+  }
+
+  /* Titres en Bold avec la couleur corail */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-bold text-primary;
+  }
+}

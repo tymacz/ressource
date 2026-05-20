@@ -1,0 +1,15 @@
+
+> ressource@0.1.0 dev C:\Users\a.marie\Downloads\-re-source-dev\-re-source-dev\ressource
+> next dev --turbo "--hostname" "127.0.0.1" "--port" "3001"
+
+   ▲ Next.js 15.5.14 (Turbopack)
+   - Local:        http://127.0.0.1:3001
+   - Network:      http://127.0.0.1:3001
+
+ ✓ Starting...
+Creating turbopack project {
+  dir: 'C:\\Users\\a.marie\\Downloads\\-re-source-dev\\-re-source-dev\\ressource',
+  testMode: true
+}
+ ✓ Compiled middleware in 281ms
+ ✓ Ready in 2.6s
