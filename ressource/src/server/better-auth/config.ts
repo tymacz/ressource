@@ -16,6 +16,22 @@ export const auth = betterAuth({
     enabled: true,
   },
 
+  // Rate limiting is enabled in all environments (Better Auth only enables it
+  // in production by default) to mitigate brute force / credential stuffing
+  // on the authentication endpoints. Storage is in-memory: fine for a single
+  // instance, but must move to "database" (or a shared secondary storage)
+  // before a multi-instance/serverless production deployment, otherwise each
+  // instance tracks its own counters.
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 30,
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-up/email": { window: 60, max: 5 },
+    },
+  },
+
   user: {
     additionalFields: {
       role_id: {

@@ -13,7 +13,9 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    BETTER_AUTH_SECRET: z.string().default(localAuthSecret),
+    BETTER_AUTH_SECRET: isProduction
+      ? z.string().min(32)
+      : z.string().default(localAuthSecret),
     BETTER_AUTH_URL: z.string().url().default(localAuthUrl),
     BETTER_AUTH_GITHUB_CLIENT_ID: z.string().optional(),
     BETTER_AUTH_GITHUB_CLIENT_SECRET: z.string().optional(),
@@ -39,7 +41,9 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET ?? localAuthSecret,
+    BETTER_AUTH_SECRET:
+      process.env.BETTER_AUTH_SECRET ??
+      (isProduction ? undefined : localAuthSecret),
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL ?? localAuthUrl,
     BETTER_AUTH_GITHUB_CLIENT_ID: process.env.BETTER_AUTH_GITHUB_CLIENT_ID,
     BETTER_AUTH_GITHUB_CLIENT_SECRET:
