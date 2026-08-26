@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: ressource
+
+env:
+  DATABASE_URL: postgresql://admin:password123@localhost:5432/ressource_db
+  # CI-only value, never used outside this ephemeral runner. Real
+  # environments get their own secret via the hosting platform.
+  BETTER_AUTH_SECRET: ci-only-secret-never-used-outside-github-actions-runners
+  BETTER_AUTH_URL: http://localhost:3000
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password123
+          POSTGRES_DB: ressource_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U admin"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: ressource/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Sync database schema
+        run: pnpm exec prisma db push
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Performance check (Lighthouse CI)
+        run: |
+          pnpm start &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000 > /dev/null && break
+            sleep 1
+          done
+          pnpm dlx @lhci/cli@0.14.x autorun --config=./lighthouserc.json
+          kill "$SERVER_PID" 2>/dev/null || true
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: ressource/.lighthouseci
+          retention-days: 14
+          if-no-files-found: ignore
