@@ -42,3 +42,8 @@ Les livrables de conception et de soutenance sont dans le dossier `docs/` :
 - `docs/architecture.md`
 - `docs/merise.md`
 - `docs/soutenance.md`
+
+Les livrables du bloc AL3 (run : sécurité et déploiement) sont dans le même dossier :
+
+- `docs/securite/plan-securisation.md`
+- `docs/deploiement/plan-deploiement.md`
