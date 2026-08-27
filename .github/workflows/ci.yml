@@ -15,7 +15,7 @@ defaults:
 
 env:
   DATABASE_URL: postgresql://admin:password123@localhost:5432/ressource_db
-  DIRECT_URL: ""
+  DIRECT_URL: "postgresql://postgres.pddoegcrtdlbzvukdbsr:[YOUR-PASSWORD]@aws-1-eu-west-1.pooler.supabase.com:6543/postgres"
   # CI-only value, never used outside this ephemeral runner. Real
   # environments get their own secret via the hosting platform.
   BETTER_AUTH_SECRET: ci-only-secret-never-used-outside-github-actions-runners
