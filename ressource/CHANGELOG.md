@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/tymacz/ressource/compare/v1.0.0...v1.0.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* test ([0c61c13](https://github.com/tymacz/ressource/commit/0c61c135a76b7b1e4b3085b9740a49ed3f7186f1))
+
 # 1.0.0 (2026-08-27)
 
 
