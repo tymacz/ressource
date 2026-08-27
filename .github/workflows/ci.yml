@@ -88,3 +88,89 @@ jobs:
           path: ressource/.lighthouseci
           retention-days: 14
           if-no-files-found: ignore
+
+  security-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trivy - dependency vulnerabilities (gate)
+        uses: aquasecurity/trivy-action@0.36.0
+        with:
+          scan-type: fs
+          scan-ref: ressource
+          scanners: vuln
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+          format: table
+
+      - name: Trivy - dependency vulnerabilities (SARIF report)
+        if: always()
+        uses: aquasecurity/trivy-action@0.36.0
+        with:
+          scan-type: fs
+          scan-ref: ressource
+          scanners: vuln
+          severity: CRITICAL,HIGH
+          exit-code: "0"
+          format: sarif
+          output: trivy-vuln.sarif
+
+      - name: Trivy - secrets and misconfiguration (report only)
+        if: always()
+        uses: aquasecurity/trivy-action@0.36.0
+        with:
+          scan-type: fs
+          scan-ref: ressource
+          scanners: secret,misconfig
+          exit-code: "0"
+          format: sarif
+          output: trivy-secret-misconfig.sarif
+
+      - name: Upload vulnerability report to the Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-vuln.sarif
+          category: trivy-vuln
+
+      - name: Upload secrets/misconfig report to the Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-secret-misconfig.sarif
+          category: trivy-secret-misconfig
+
+  release:
+    needs: [build-and-test, security-scan]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: ressource/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Release (semantic-release)
+        run: pnpm exec semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
